@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "provider": "REQUIRES_OPERATOR_DECISION",
+  "public_protocol": "HTTPS_ONLY",
+  "tls_termination": "REQUIRES_OPERATOR_DECISION",
+  "public_upstream": "LOOPBACK_FRONTEND_ONLY",
+  "backend_publicly_routable": false,
+  "database_publicly_routable": false,
+  "routes": [
+    {
+      "public_path": "/*",
+      "upstream": "frontend",
+      "purpose": "Next.js pages, static assets, and same-origin API proxy"
+    }
+  ],
+  "backend_health": {
+    "visibility": "INTERNAL_SUPERVISOR_ONLY",
+    "path": "/api/v1/health",
+    "normal_status": 200,
+    "maintenance_status": 503
+  },
+  "connection_policy": {
+    "drain_timeout_seconds": "BASELINE_REQUIRED",
+    "upstream_timeout_seconds": "BASELINE_REQUIRED",
+    "automatic_retry_non_idempotent_requests": false,
+    "preserve_maintenance_503": true,
+    "queue_financial_commands_during_maintenance": false
+  },
+  "forwarded_headers": {
+    "strip_untrusted_incoming_values": true,
+    "set_from_trusted_ingress": true,
+    "used_for_financial_authorization": false
+  },
+  "protected_paths": [
+    "database",
+    "backup",
+    "restore-proof",
+    "target",
+    "evidence",
+    "logs",
+    "recovery",
+    "runtime",
+    "secrets"
+  ]
+}

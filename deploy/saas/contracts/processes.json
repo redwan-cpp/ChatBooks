@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "supervisor": "REQUIRES_OPERATOR_DECISION",
+  "processes": {
+    "backend": {
+      "command": ["chatbook-api"],
+      "instances": 1,
+      "authoritative_financial_writer": true,
+      "bind": "LOOPBACK_ONLY",
+      "start_after": ["persistent-storage-mounted", "configuration-validated"],
+      "health": "GET /api/v1/health",
+      "graceful_stop": "SERVER_MAINTENANCE_SHUTDOWN_THEN_PLATFORM_SIGNAL",
+      "stop_timeout_seconds": "BASELINE_REQUIRED",
+      "restart_policy": "ON_FAILURE_WITH_SINGLE_INSTANCE_GUARD"
+    },
+    "frontend": {
+      "command": [
+        "npm",
+        "run",
+        "start",
+        "--",
+        "--hostname",
+        "127.0.0.1",
+        "--port",
+        "CONFIGURED_FRONTEND_PORT"
+      ],
+      "instances": 1,
+      "authoritative_financial_writer": false,
+      "bind": "LOOPBACK_ONLY",
+      "start_after": ["backend-healthy"],
+      "health": "LOCAL_HTTP_GET_/login_OR_/",
+      "graceful_stop": "PLATFORM_SIGNAL",
+      "stop_timeout_seconds": "BASELINE_REQUIRED",
+      "restart_policy": "ON_FAILURE"
+    }
+  },
+  "forbidden": [
+    "multiple-backend-instances",
+    "rolling-backend-writer-overlap",
+    "frontend-database-access",
+    "scheduled-financial-writers",
+    "automatic-schema-migration"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "deployment_id": "REQUIRES_OPERATOR_DECISION",
+  "release_id": "REQUIRES_OPERATOR_DECISION_64_CHARACTER_SHA256",
+  "runtime": {
+    "storage_mode": "organization-v3",
+    "schema_version": 3,
+    "access_mode": "read-write",
+    "backend_host": "127.0.0.1",
+    "backend_port": 8000,
+    "frontend_host": "127.0.0.1",
+    "frontend_port": 3000,
+    "authoritative_writer_processes": 1,
+    "session_ttl_seconds": 28800
+  },
+  "paths": {
+    "root": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook",
+    "v3_database": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/database/chatbook-business-v3.db",
+    "fresh_backup": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/backup/chatbook-business-v3.backup.db",
+    "restore_proof": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/restore-proof/chatbook-business-v3.restore.db",
+    "future_v4_target": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/target/chatbook-business-v4.db",
+    "evidence": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/evidence",
+    "logs": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/logs",
+    "recovery": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/recovery",
+    "secrets": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/secrets",
+    "runtime": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/runtime",
+    "maintenance_control": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/runtime/maintenance-control.json",
+    "maintenance_state": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/runtime/maintenance-state.json",
+    "operational_events": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/logs/operational-events.jsonl",
+    "monitoring_configuration": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/config/operational-monitoring.json",
+    "provisioning_credentials": "/ABSOLUTE/PATH/REQUIRES_OPERATOR_DECISION/chatbook/secrets/provisioning-credentials.json"
+  }
+}

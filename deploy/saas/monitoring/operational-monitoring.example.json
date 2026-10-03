@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "phase": "PRE_CUTOVER_V3",
+  "database_path": "REQUIRES_OPERATOR_DECISION_ABSOLUTE_PATH",
+  "expected_schema_version": 3,
+  "expected_manifest_path": "REQUIRES_OPERATOR_DECISION_ABSOLUTE_PATH",
+  "application_log_path": "REQUIRES_OPERATOR_DECISION_ABSOLUTE_PATH",
+  "migration_report_path": null,
+  "baselines": {
+    "latency": "BASELINE_REQUIRED",
+    "migration_duration": "BASELINE_REQUIRED",
+    "drain_duration": "BASELINE_REQUIRED",
+    "lock_frequency": "BASELINE_REQUIRED"
+  },
+  "operator_decisions": {
+    "monitoring_owner": "REQUIRES_OPERATOR_DECISION",
+    "escalation_owner": "REQUIRES_OPERATOR_DECISION",
+    "observation_period": "REQUIRES_OPERATOR_DECISION",
+    "alert_destination": "REQUIRES_OPERATOR_DECISION",
+    "stop_or_rollback_authority": "REQUIRES_OPERATOR_DECISION"
+  }
+}

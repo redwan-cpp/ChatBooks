@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "filesystem": "LOCAL_PERSISTENT_FILESYSTEM_WITH_SQLITE_LOCKING_REQUIRES_VERIFICATION",
+  "database_publicly_served": false,
+  "backup_publicly_served": false,
+  "restore_publicly_served": false,
+  "separate_locations": [
+    "database",
+    "fresh-backup",
+    "restore-proof",
+    "future-v4-target",
+    "migration-evidence",
+    "logs",
+    "recovery-release",
+    "secrets"
+  ],
+  "controls": {
+    "database_owner": "DEDICATED_APPLICATION_IDENTITY_REQUIRES_OPERATOR_DECISION",
+    "application_write_access": "BACKEND_IDENTITY_ONLY",
+    "operator_access": "NAMED_LEAST_PRIVILEGE_PRINCIPALS_REQUIRES_OPERATOR_DECISION",
+    "encryption_at_rest": "REQUIRES_OPERATOR_DECISION",
+    "off_host_recovery": "BLOCKED_UNTIL_DESTINATION_AND_RESTORE_TEST_EXIST",
+    "retention_and_destruction": "REQUIRES_OPERATOR_DECISION",
+    "protected_artifact_access_audit": "REQUIRES_OPERATOR_DECISION"
+  },
+  "backup_contract": {
+    "method": "SQLITE_BACKUP_API_UNDER_HELD_WRITER_GATE",
+    "fresh_destination_required": true,
+    "restore_to_distinct_path_required": true,
+    "sha256_required": true,
+    "preflight_manifest_comparison_required": true,
+    "automatic_migration": false
+  }
+}

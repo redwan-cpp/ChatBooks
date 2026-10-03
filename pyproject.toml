@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chatbook"
+version = "0.1.0"
+description = "Deterministic accounting foundation for Chatbooks"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.34,<1",
+]
+
+[project.optional-dependencies]
+dev = ["httpx2>=2,<3", "mypy>=1.15,<2", "ruff>=0.11,<1"]
+
+[project.scripts]
+chatbook = "chatbook.cli:main"
+chatbook-api = "chatbook.api.main:run"
+chatbook-migration-evidence = "chatbook.migration_evidence:main"
+chatbook-canonical-rehearsal = "chatbook.canonical_migration:main"
+chatbook-c4a-rehearsal = "chatbook.cutover_readiness:main"
+chatbook-c4p = "chatbook.deployment_preparation:main"
+chatbook-runtime = "chatbook.runtime:main"
+chatbook-traffic-control = "chatbook.maintenance:main"
+chatbook-c4-monitor = "chatbook.operational_monitoring:main"
+chatbook-saas-deployment = "chatbook.saas_deployment:main"
+
+[tool.setuptools.packages.find]
+include = ["chatbook*"]
+
+[tool.setuptools.package-data]
+chatbook = ["schema.sql", "migrations/*.sql"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["chatbook"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [".uv-cache", ".test-tmp"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
