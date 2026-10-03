@@ -547,8 +547,7 @@ automation; P7 compliance product scope and claims; P8 combined views and AI pri
 
 A1 personal chart/mappings and corrections; A2 cross-space classification; A3 personal period and
 close policy; A4 every jurisdiction/compliance rule; A5 report classifications and valuation. The
-larger policy register remains in
-[`M5_PERSONAL_FINANCE_DECISIONS.md`](M5_PERSONAL_FINANCE_DECISIONS.md) and
+larger policy register remains in [`personal-finance-model.md`](personal-finance-model.md) and
 [`accounting-model.md`](accounting-model.md).
 
 ## Intentionally deferred

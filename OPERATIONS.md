@@ -6,8 +6,8 @@
 
 **C4P7 successor decision:** D01=B. This document and every fixed Windows path below are controlled
 staging evidence only. They are not the final server procedure. Use the provider-neutral
-[C4P7 SaaS deployment foundation](docs/M5_1_C4P7_SAAS_DEPLOYMENT_FOUNDATION.md) to prepare a newly
-selected server, then regenerate its exact commands and evidence.
+[SaaS deployment package](deploy/saas/README.md) to prepare a newly selected server, then regenerate
+its exact commands and evidence.
 
 This document describes the controls that are present in the controlled staging package. It does
 not authorize M5.1-C4, a schema-v3 to schema-v4 migration, a canary, or schema-v4 writers.

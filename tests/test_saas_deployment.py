@@ -1,4 +1,4 @@
-"""M5.1-C4P7 provider-neutral SaaS server deployment foundation tests."""
+"""Provider-neutral SaaS server deployment foundation tests."""
 
 import hashlib
 import json
@@ -26,7 +26,7 @@ def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-class M51C4P7Tests(unittest.TestCase):
+class SaaSDeploymentTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

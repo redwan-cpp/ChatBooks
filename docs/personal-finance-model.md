@@ -17,11 +17,9 @@ never spans the two domains. Frontend context selection is presentation state; t
 the authenticated actor's authority for every request.
 
 The decisions are architectural. Accounting and product-policy questions that still need human or
-qualified-accountant approval are listed in
-[`M5_PERSONAL_FINANCE_DECISIONS.md`](M5_PERSONAL_FINANCE_DECISIONS.md).
-The simplified MVP vocabulary, operation semantics, exclusions, and remaining policy gates are in
-[`M5_2_PERSONAL_FINANCE_MVP_POLICY.md`](M5_2_PERSONAL_FINANCE_MVP_POLICY.md). That policy narrows
-future scope but does not implement personal finance or approve the listed accountant gates.
+qualified-accountant approval are identified throughout this document. The simplified MVP
+vocabulary, operation semantics, exclusions, and remaining policy gates narrow future scope but do
+not implement personal finance or approve the listed accountant gates.
 
 ## Architecture conclusions
 

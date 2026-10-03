@@ -22,7 +22,7 @@ from chatbook.financial.context import FinancialCapability
 from chatbook.fingerprints import transaction_fingerprint
 
 
-class M51C2Tests(unittest.TestCase):
+class UniversalFinancialServiceTests(unittest.TestCase):
     def setUp(self) -> None:
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)

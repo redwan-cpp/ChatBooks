@@ -1,4 +1,4 @@
-"""Canonical schema-v4 disposable-copy rehearsal and repository tests."""
+"""Canonical book-scoped migration and repository tests."""
 
 import hashlib
 import json
@@ -26,7 +26,7 @@ from chatbook.migration_evidence import table_evidence
 from chatbook.storage.sqlite_book import SQLiteBookStorage
 
 
-class M51C3Tests(unittest.TestCase):
+class CanonicalBookMigrationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)

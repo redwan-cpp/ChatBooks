@@ -81,8 +81,7 @@ Personal/business movements create two independently confirmed effects linked by
 correlation metadata. Their accounting treatment is an explicit accountant decision.
 
 No executable or schema change is part of M5.0. See
-[`docs/personal-finance-model.md`](docs/personal-finance-model.md),
-[`docs/M5_PERSONAL_FINANCE_DECISIONS.md`](docs/M5_PERSONAL_FINANCE_DECISIONS.md), and ADRs
+[`docs/personal-finance-model.md`](docs/personal-finance-model.md) and ADRs
 [`0013`](docs/decisions/0013-personal-ownership-isolation.md) through
 [`0017`](docs/decisions/0017-personal-category-mapping.md).
 
@@ -145,12 +144,11 @@ future personal adapter remains the only presentation-to-ledger translation boun
 closed when period, default mapping, opening-balance, liability, cash-position, or cross-space policy
 has not been approved. No PersonalSpace, schema, API, UI, or executable behavior is added.
 
-See [`docs/M5_2_PERSONAL_FINANCE_MVP_POLICY.md`](docs/M5_2_PERSONAL_FINANCE_MVP_POLICY.md) for the
-operation semantics, decision classifications, and implementation gates.
+See [`docs/personal-finance-model.md`](docs/personal-finance-model.md) for the operation semantics,
+decision classifications, and implementation gates.
 
 The option comparison, decision classifications, and remaining migration gates are in
-[`docs/universal-financial-core.md`](docs/universal-financial-core.md), the
-[`docs/M5_1B_IMPLEMENTATION_PLAN.md`](docs/M5_1B_IMPLEMENTATION_PLAN.md), and ADRs 0018–0020.
+[`docs/universal-financial-core.md`](docs/universal-financial-core.md) and ADRs 0018–0020.
 
 ## Module boundaries
 

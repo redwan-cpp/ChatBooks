@@ -84,8 +84,7 @@ financial ownership column. Future implementation still requires an ownership-ne
 typed personal adapter while the existing business engine and organization routes remain compatible.
 Personal posting must remain disabled until period, opening-balance, default mapping, liability, and
 cross-space accounting policies are approved. See
-[`docs/personal-finance-model.md`](docs/personal-finance-model.md) and
-[`docs/M5_PERSONAL_FINANCE_DECISIONS.md`](docs/M5_PERSONAL_FINANCE_DECISIONS.md).
+[`docs/personal-finance-model.md`](docs/personal-finance-model.md).
 
 ## Universal financial-core requirement
 

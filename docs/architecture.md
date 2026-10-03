@@ -104,8 +104,7 @@ Personal account profiles and categories are application-domain records mapped d
 owned ledger accounts. Opening balances and same-space transfers become proposals. Cross-space
 movements create separately authorized effects in each ledger plus a non-financial correlation; no
 journal spans spaces. Full details and decision gates are in
-[`personal-finance-model.md`](personal-finance-model.md) and
-[`M5_PERSONAL_FINANCE_DECISIONS.md`](M5_PERSONAL_FINANCE_DECISIONS.md).
+[`personal-finance-model.md`](personal-finance-model.md).
 
 ## M5.1 universal core architecture and implemented rehearsal persistence
 
@@ -216,7 +215,7 @@ proposal creation; it is not replaced by an adapter default.
 The current runtime remains unchanged: normal startup uses schema v3, schema v4 remains rehearsal
 only, and no PERSONAL owner exists. M5.1-C4 and a separately authorized personal implementation and
 migration must complete before personal writes can be enabled. See
-[`M5_2_PERSONAL_FINANCE_MVP_POLICY.md`](M5_2_PERSONAL_FINANCE_MVP_POLICY.md).
+[`personal-finance-model.md`](personal-finance-model.md).
 
 ## Domain persistence
 

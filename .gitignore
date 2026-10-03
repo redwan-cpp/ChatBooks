@@ -23,3 +23,16 @@ frontend/tsconfig.tsbuildinfo
 .env.*
 !.env.example
 !*.env.example
+
+# Local development guidance, task history, and generated media
+/AGENTS.md
+/rules.md
+/memory.md
+/process.md
+/brag-output/
+/.agents/
+/.codex/
+
+# Internal milestone and implementation reports
+/docs/M*.md
+/*_REPORT.md

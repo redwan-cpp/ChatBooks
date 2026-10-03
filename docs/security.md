@@ -221,10 +221,8 @@ authorize a production cutover, or enable PERSONAL books. Those remain deploymen
   not session tokens, passwords, financial descriptions, journal payloads, or complete audit JSON.
 
 The synthetic workspace does not prove production ACLs, encryption, retention, process inventory,
-logging, or monitoring. Those controls and the exact deployment writer shutdown remain mandatory C4
-approval gates. See the [cutover runbook](M5_1_C4_CUTOVER_RUNBOOK.md),
-[release checklist](M5_1_C4_RELEASE_CHECKLIST.md), and
-[readiness report](M5_1_C4A_READINESS_REPORT.md).
+logging, or monitoring. Those controls and the exact deployment writer shutdown remain mandatory
+approval gates. See the [SaaS deployment package](../deploy/saas/README.md).
 
 ## Implemented controls
 

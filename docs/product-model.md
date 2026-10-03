@@ -85,8 +85,7 @@ liability, and cross-space accounting policies require human or accountant decis
 posting is enabled.
 
 The complete domain specification and decision gates are in
-[`personal-finance-model.md`](personal-finance-model.md) and
-[`M5_PERSONAL_FINANCE_DECISIONS.md`](M5_PERSONAL_FINANCE_DECISIONS.md).
+[`personal-finance-model.md`](personal-finance-model.md).
 
 ## Business finance
 

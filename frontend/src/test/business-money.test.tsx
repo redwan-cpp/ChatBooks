@@ -143,7 +143,7 @@ beforeEach(() => {
   apiMocks.updateAccount.mockResolvedValue(accounts[0]);
 });
 
-describe("M5.2-UI1 BUSINESS Money workspace", () => {
+describe("Chatbooks BUSINESS Money workspace", () => {
   it("renders API-backed overview totals, balances, and recent activity without duplicate loads", async () => {
     render(<MoneyWorkspace organization={organization} />);
 

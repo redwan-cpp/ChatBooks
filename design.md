@@ -108,7 +108,7 @@ Balances, Activity, Income, Spending, Category Spending, and Cash Position are r
 posted data. Budgets and reminders may later reference personal accounts/categories but never change
 actuals. Investments, net-worth valuation, household sharing, multi-currency, automatic financial
 posting, tax, and compliance are outside this MVP. The full policy is in
-[`docs/M5_2_PERSONAL_FINANCE_MVP_POLICY.md`](docs/M5_2_PERSONAL_FINANCE_MVP_POLICY.md).
+[`docs/personal-finance-model.md`](docs/personal-finance-model.md).
 
 ## Universal core design direction
 

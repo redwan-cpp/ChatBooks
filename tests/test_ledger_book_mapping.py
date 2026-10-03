@@ -52,7 +52,7 @@ def _drop_generated_update_guards(connection: sqlite3.Connection, table: str) ->
     connection.execute(f"DROP TRIGGER IF EXISTS audit_{table}_update")
 
 
-class M51C1Tests(unittest.TestCase):
+class LedgerBookMappingTests(unittest.TestCase):
     def setUp(self) -> None:
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)

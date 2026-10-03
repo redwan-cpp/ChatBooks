@@ -1,4 +1,4 @@
-"""M5.1-C4A synthetic cutover-readiness and recovery evidence."""
+"""Synthetic cutover-readiness and recovery evidence tests."""
 
 import json
 import tempfile
@@ -11,7 +11,7 @@ from chatbook.domain import ChatbookError
 from chatbook.engine import AccountingEngine
 
 
-class M51C4AReadinessTests(unittest.TestCase):
+class CutoverReadinessTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)

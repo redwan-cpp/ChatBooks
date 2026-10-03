@@ -209,8 +209,7 @@ rule.
 Personal user-facing reports are account balances, money activity, spending, income, category
 spending, and an approved liquid-account cash position. They derive from posted personal lines.
 Business statement names and presentation are not the default personal experience. Full design and
-decision gates are in [`personal-finance-model.md`](personal-finance-model.md) and
-[`M5_PERSONAL_FINANCE_DECISIONS.md`](M5_PERSONAL_FINANCE_DECISIONS.md).
+decision gates are in [`personal-finance-model.md`](personal-finance-model.md).
 
 ## M5.2-A simplified personal MVP policy
 
@@ -240,7 +239,7 @@ Historical financial reclassification uses an approved correction workflow, neve
 Budgets and reminders remain non-ledger future records; their state cannot change actuals.
 
 The authoritative operation-by-operation policy, decision classification, exclusions, and gates are
-in [`M5_2_PERSONAL_FINANCE_MVP_POLICY.md`](M5_2_PERSONAL_FINANCE_MVP_POLICY.md). This policy does not
+in [`personal-finance-model.md`](personal-finance-model.md). This policy does not
 approve tax, compliance, investment valuation, multi-currency, automated interest/amortization,
 personal/business classifications, or automatic posting.
 

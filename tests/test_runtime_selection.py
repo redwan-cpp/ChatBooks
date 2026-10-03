@@ -1,4 +1,4 @@
-"""M5.1-C4P2 normal runtime selection and controlled-environment hardening."""
+"""Normal runtime selection and controlled-environment hardening tests."""
 
 import contextlib
 import hashlib
@@ -41,7 +41,7 @@ def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-class M51C4P2Tests(unittest.TestCase):
+class RuntimeSelectionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

@@ -1,4 +1,4 @@
-"""M5.1-C4P controlled deployment-preparation tests."""
+"""Controlled deployment-preparation tests."""
 
 import hashlib
 import json
@@ -19,7 +19,7 @@ def _hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-class M51C4PTests(unittest.TestCase):
+class DeploymentPreparationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)

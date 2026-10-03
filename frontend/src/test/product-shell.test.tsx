@@ -51,7 +51,7 @@ vi.mock("@/features/context/financial-space-provider", () => ({
   }),
 }));
 
-describe("M5.2-UI0 product shell", () => {
+describe("Chatbooks product shell", () => {
   beforeEach(() => {
     shell.pathname = "/chat";
     shell.spaceKind = "business";
