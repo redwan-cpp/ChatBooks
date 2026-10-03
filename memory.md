@@ -840,3 +840,19 @@ alone.
 - Verified the API health endpoint returned `status: ok`, OpenAPI identified the service as
   `Chatbooks API`, and the frontend login route returned HTTP 200 with Chatbooks branding.
 - No source code, schema, accounting data, migration state, or product behavior changed.
+
+## 2026-10-03 — Initial GitHub publication
+
+- Initialized the repository on `main` and published the verified project snapshot to
+  `https://github.com/redwan-cpp/ChatBooks.git`; the initial remote commit is
+  `71238fd6fd686548298fb9e98d4c96bb98cbb263`.
+- Added a mandatory `rules.md` prohibition against naming ChatGPT, Codex, another AI system, or an
+  automated assistant as a commit author, co-author, contributor trailer, or repository co-author.
+- Published with the configured human Git identity `Red <aminmredwan@gmail.com>` and verified that
+  the commit message and metadata contain no AI author or co-author attribution.
+- Strengthened `.gitignore` before publication. Local databases, backups, private environment files,
+  dependency directories, build output, generated caches, and temporary test artifacts were not
+  committed. A targeted credential scan found no credentials in the 204-file publication set.
+- Verification passed before publication: 112 backend tests, 25 frontend tests, strict Mypy, Ruff
+  lint and formatting, TypeScript, ESLint, Prettier, the Next.js production build, and 254 local
+  links across 73 Markdown files.
