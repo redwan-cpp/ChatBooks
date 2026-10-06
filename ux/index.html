@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chatbooks UX Walkthrough</title>
+<style>
+  :root {
+    --ink: #14342a; --ink-2: #3f5a50; --muted: #6d8178;
+    --bg: #eef1e8; --paper: #fbfcf6; --line: #d9dfd0;
+    --forest: #0f3a2c; --forest-2: #17503d; --mint: #2fb783; --mint-soft: #dcf4e8;
+    --lilac: #7c5cf0; --lilac-soft: #ece6ff; --amber: #f2b84b; --rose: #c2483f;
+    --shadow: 0 1px 2px rgba(15,58,44,.08), 0 12px 32px rgba(15,58,44,.10);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--bg); overflow: hidden; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .app { display: grid; grid-template-rows: 56px 1fr; height: 100%; }
+  header { display: flex; align-items: center; gap: 16px; padding: 0 20px; background: var(--forest); color: #eaf5ee; }
+  .brand { font-weight: 700; letter-spacing: .01em; display: flex; align-items: center; gap: 10px; }
+  .brand i { width: 22px; height: 22px; border-radius: 7px; background: linear-gradient(135deg, #5fe0a8, #2fb783); display: inline-block; }
+  .brand small { font-weight: 500; color: #9fc4b3; margin-left: 4px; }
+  .spacer { flex: 1; }
+  .counter { font-variant-numeric: tabular-nums; color: #b8d6c8; font-size: 13px; }
+  .hbtn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); color: #eaf5ee; border-radius: 10px; padding: 6px 12px; font-size: 13px; }
+  .hbtn:hover { background: rgba(255,255,255,.16); }
+  .hbtn:focus-visible, .toc button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .progress { height: 3px; background: rgba(255,255,255,.12); position: absolute; left: 0; right: 0; top: 56px; }
+  .progress b { display: block; height: 100%; background: var(--mint); width: 0; transition: width .25s ease; }
+
+  main { position: relative; min-height: 0; }
+  .slide { position: absolute; inset: 0; display: none; grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr); gap: 0; }
+  .slide.active { display: grid; }
+
+  /* left: the screen */
+  .stage { background: linear-gradient(160deg, #d8e3d6, #e9eee2); padding: 28px 28px 28px 56px; min-height: 0; display: flex; flex-direction: column; }
+  .frame { flex: 1; min-height: 0; background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; border: 1px solid #c8d3c3; }
+  .chrome { height: 34px; flex: none; display: flex; align-items: center; gap: 7px; padding: 0 14px; background: #f1f4ec; border-bottom: 1px solid var(--line); }
+  .chrome span { width: 10px; height: 10px; border-radius: 50%; background: #cdd6c7; }
+  .chrome em { margin-left: 10px; font-style: normal; font-size: 12px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 2px 12px; }
+  .scroller { flex: 1; min-height: 0; overflow: auto; background: #f6f7ef; }
+  .shot { position: relative; line-height: 0; }
+  .shot img { width: 100%; display: block; }
+  .hide-mk .mk { display: none; }
+  .mk { position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--lilac); color: #fff; font: 700 11px/20px system-ui; opacity: .92; text-align: center; box-shadow: 0 0 0 2px rgba(255,255,255,.95), 0 3px 8px rgba(60,30,160,.35); cursor: pointer; border: 0; padding: 0; transition: transform .15s ease, background .15s; }
+  .mk:hover, .mk.on { transform: translate(-50%, -50%) scale(1.3); background: var(--forest); opacity: 1; z-index: 2; }
+  .hint { flex: none; margin-top: 10px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  .phone-stage { align-items: center; }
+  .phone-stage .hint { justify-content: center; } .phone-stage .hint span:last-child { display: none; }
+  .phone { width: 330px; max-width: 100%; flex: 1; min-height: 0; border-radius: 34px; background: #0c1f19; padding: 12px; box-shadow: var(--shadow); display: flex; }
+  .phone .scroller { border-radius: 24px; }
+
+  /* right: the details */
+  .detail { background: var(--paper); border-left: 1px solid var(--line); overflow: auto; padding: 30px 34px 40px; }
+  .kicker { font: 700 11px/1 system-ui; letter-spacing: .14em; text-transform: uppercase; color: var(--mint); margin: 0 0 10px; }
+  .detail h1 { font-size: 28px; line-height: 1.15; margin: 0 0 10px; letter-spacing: -.01em; }
+  .lead { color: var(--ink-2); font-size: 16px; margin: 0 0 22px; }
+  h3 { font: 700 11px/1 system-ui; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 26px 0 12px; }
+  ol.items, ul.items { list-style: none; margin: 0; padding: 0; }
+  .items li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 10px 10px; margin: 0 -10px; border-radius: 10px; transition: background .15s; }
+  .items li:hover, .items li.on { background: #f0f3ea; }
+  .num { width: 24px; height: 24px; border-radius: 50%; background: var(--lilac-soft); color: var(--lilac); font: 700 12px/24px system-ui; text-align: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); margin: 8px 8px; }
+  .items b { display: block; font-size: 14.5px; }
+  .items span { color: var(--ink-2); font-size: 14px; }
+  .rules { margin: 0; padding: 0; list-style: none; }
+  .rules li { position: relative; padding: 0 0 8px 20px; color: var(--ink-2); font-size: 14px; }
+  .rules li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 7px; height: 7px; border-radius: 2px; background: var(--forest-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; background: #e8ede1; color: var(--ink-2); border-radius: 8px; padding: 6px 8px; }
+  .chip.role { background: var(--mint-soft); color: var(--forest-2); font-family: system-ui; }
+  .note { margin-top: 22px; padding: 12px 14px; border-radius: 12px; background: #fff6e0; color: #6b4d0c; font-size: 13.5px; border: 1px solid #f1dca6; }
+
+  /* text-only slides */
+  .full { grid-column: 1 / -1; overflow: auto; padding: 48px 56px 56px; background: radial-gradient(1100px 500px at 85% -10%, #dff3e8 0, transparent 60%), var(--paper); }
+  .full .inner { max-width: 1080px; margin: 0 auto; }
+  .full h1 { font-size: 44px; line-height: 1.08; letter-spacing: -.02em; margin: 6px 0 14px; }
+  .full .lead { font-size: 19px; max-width: 760px; }
+  .cover { background: linear-gradient(135deg, var(--forest) 0%, #17503d 55%, #2b4c6b 100%); color: #eaf5ee; display: flex; align-items: center; }
+  .cover h1 { font-size: 64px; color: #fff; max-width: 820px; }
+  .cover .lead { color: #bfd9cb; }
+  .cover .kicker { color: #b7f25f; }
+  .pillrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+  .pill { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: #d7eadf; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 26px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: 0 1px 2px rgba(15,58,44,.05); }
+  .card b { display: block; margin-bottom: 4px; }
+  .card span { color: var(--ink-2); font-size: 14px; }
+  .flow { display: flex; align-items: stretch; gap: 8px; margin-top: 28px; flex-wrap: wrap; }
+  .step { flex: 1; min-width: 150px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; position: relative; }
+  .step i { font: 700 11px/1 system-ui; color: var(--lilac); letter-spacing: .1em; font-style: normal; }
+  .step b { display: block; margin: 6px 0 2px; }
+  .step span { color: var(--ink-2); font-size: 13.5px; }
+  .step:not(:last-child)::after { content: "→"; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); color: var(--muted); z-index: 1; }
+  table { border-collapse: collapse; width: 100%; background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); margin-top: 22px; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: center; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  th { background: #f1f4ec; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  td.y { color: var(--forest-2); font-weight: 700; } td.n { color: #b8c3b8; }
+
+
+  .toc { position: fixed; inset: 56px 0 0 0; background: rgba(12,31,25,.55); z-index: 20; display: none; }
+  .toc.open { display: block; }
+  .toc .panel { position: absolute; left: 0; top: 0; bottom: 0; width: min(420px, 92vw); background: var(--paper); overflow: auto; padding: 18px 18px 40px; box-shadow: var(--shadow); }
+  .toc h4 { margin: 18px 6px 6px; font: 700 11px/1 system-ui; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .toc button { display: flex; gap: 10px; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 10px; padding: 8px 10px; }
+  .toc button:hover, .toc button.cur { background: var(--mint-soft); }
+  .toc button small { color: var(--muted); min-width: 22px; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; } .app { height: auto; min-height: 100%; } main { min-height: calc(100vh - 56px); }
+    .slide.active { display: block; position: relative; }
+    .stage { padding: 14px; height: 70vh; } .detail { border-left: 0; }
+    .cover h1 { font-size: 40px; } .full { padding: 28px 20px; }
+  }
+  @media print { header, .progress, .hint { display: none; } body { overflow: visible; } .slide { position: relative; display: grid; page-break-after: always; height: 100vh; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><i></i>Chatbooks <small>UX walkthrough</small></div>
+    <div class="spacer"></div>
+    <span class="counter" id="counter"></span>
+    <button class="hbtn" id="prev" aria-label="Previous slide">← Prev</button>
+    <button class="hbtn" id="next" aria-label="Next slide">Next →</button>
+    <button class="hbtn" id="mkBtn" aria-pressed="true" title="Show or hide markers (M)">Markers (M)</button>
+    <button class="hbtn" id="tocBtn" aria-haspopup="dialog">Contents (G)</button>
+  </header>
+  <div class="progress"><b id="bar"></b></div>
+  <main id="main">
+  </main>
+</div>
+<div class="toc" id="toc"><div class="panel" id="tocPanel"></div></div>
+
+<script>
+// Hotspots are [x, y] in pixels of the screenshot's natural size (1440 wide for desktop, 390 for mobile).
+const R = (s) => s; // marker for readability
+const slides = [
+  { type: 'cover' },
+  { type: 'principles' },
+
+  // ---------- Access ----------
+  { section: 'Getting in', title: 'Sign in', url: '/login', img: '01-login.png', kicker: 'Access',
+    lead: 'A calm, two-panel entry. The brand promise sits on the left; the only action on the page sits on the right.',
+    items: [
+      ['Brand panel', 'Headline, short reassurance and the companion character. It sets tone: plain words, review before anything changes.'],
+      ['Username or email', 'One field for either identifier, so people do not have to remember which they registered with.'],
+      ['Sign in', 'Primary action. Shows “Please wait…” while the request runs and is disabled until the session state is known.'],
+      ['Trust line', '“Financial changes always wait for validation and review.” States the core safety rule before the user has typed anything.'],
+      ['Create one', 'Link to registration for new users.'],
+      ['Proof points', '“Deterministic checks” and “Auditable history” echo what the ledger guarantees.'],
+    ],
+    hot: [[290,300],[1098,487],[1098,645],[1098,696],[1166,752],[380,932]],
+    rules: ['Errors appear inline above the button; the form keeps what was typed.', 'A ?next= parameter returns people to the page that sent them here after sign-in.', 'Sessions are opaque tokens held in HTTP-only cookies; browser JavaScript never sees them.'],
+    data: ['POST /auth/token', 'GET /auth/me'] },
+
+  { section: 'Getting in', title: 'Create account', url: '/register', img: '02-register.png', kicker: 'Access',
+    lead: 'Same layout as sign-in, with a friendlier heading and one extra field. The user is signed in immediately after creating the account.',
+    items: [
+      ['Your name', 'Shown in the sidebar profile and on confirmations.'],
+      ['Username or email', 'Unique across the product. A taken name returns a clear “already registered” message.'],
+      ['Password', 'Hint reads “Use at least 12 characters.” The browser enforces the minimum before the request is sent.'],
+      ['Create account', 'Registers, signs in, then lands on Chat where business setup is offered.'],
+      ['Already have an account?', 'Switches back to sign-in.'],
+    ],
+    rules: ['New-password autofill hints are set so password managers offer to generate one.', 'No email verification step exists yet.'],
+    data: ['POST /auth/register', 'POST /auth/token'] },
+
+  { section: 'Getting in', title: 'Create your business', url: '/chat (first run)', img: '03a-onboarding.png', kicker: 'First-run setup',
+    lead: 'A new user has no financial context yet. Instead of an empty app, the first screen asks for the three facts every ledger needs.',
+    items: [
+      ['Business name', 'Becomes the “financial context” shown in the sidebar switcher.'],
+      ['Currency code', 'Three uppercase letters, such as USD or BDT. Fixed for the life of the business.'],
+      ['Decimal places', 'Minor-unit digits (0–3). All amounts are stored as integers in the smallest unit, never as floats.'],
+      ['Create business', 'Creates the organization and makes the user its Owner.'],
+    ],
+    hot: [[844,473],[636,564],[1052,564],[844,655]],
+    rules: ['Each business ledger is isolated; nothing is shared between organizations.', 'After creation the user adds accounts and an open period (see Money and Settings).'],
+    data: ['POST /organizations'] },
+
+  // ---------- Shell ----------
+  { section: 'App shell', title: 'Navigation and context switcher', url: 'every signed-in page', img: '19-context-switcher.png', kicker: 'App shell',
+    lead: 'One persistent sidebar frames every screen. It answers three questions at a glance: where am I, whose books are these, and who am I signed in as.',
+    items: [
+      ['Financial context', 'The switcher shows the active space. Opening it lists Personal and each Business with the user’s role and currency.'],
+      ['Personal space', 'Visible but marked “Available in a future milestone”. It cannot be selected yet.'],
+      ['Businesses', 'Each row shows name, role (Owner, Accountant…) and currency. Choosing one reloads Money, Reports, Projects and Settings for that ledger.'],
+    ],
+    hot: [[123,120],[80,205],[120,310]],
+    rules: ['Primary navigation: Chat, Money, Activity, Reports, Projects, Settings. Projects only appears in a business space.', 'The companion card (“Small steps. Clear books.”) is a reminder that every financial change waits for review.', 'The profile area at the bottom shows the user name and role, and holds the Log out button.', 'Escape closes the switcher; the active page is highlighted in the sidebar.'],
+    data: ['GET /organizations'] },
+
+  { section: 'App shell', title: 'Mobile navigation', url: 'under 900px', img: '23-mobile-more-menu.png', phone: true, kicker: 'App shell',
+    lead: 'On phones the sidebar becomes a bottom bar so the four daily destinations stay one tap away.',
+    items: [
+      ['Four primary tabs', 'Chat, Money, Activity and Reports.'],
+      ['More', 'Opens a small menu with Projects and Settings. The More tab is highlighted when either of those pages is open.'],
+      ['Top bar', 'Brand mark plus the financial-context switcher, so the active ledger is always visible.'],
+    ],
+    rules: ['Menu is a proper popup menu: it traps focus, closes on Escape and on outside tap.', 'Layouts collapse to a single column; wide tables become stacked rows.'] },
+
+  // ---------- Chat ----------
+  { section: 'Chat', title: 'Chat workspace', url: '/chat', img: '03-chat.png', kicker: 'Chat',
+    lead: 'The front door for “tell me what happened with my money”. Today it previews the experience honestly: nothing is sent, and nothing can post.',
+    items: [
+      ['Space bar', 'Names the active business so every message has a clear ledger.'],
+      ['AI actions unavailable', 'A status pill that states plainly the assistant is not connected.'],
+      ['Conversation hero', '“What do you want to do with your money?” with the companion and a promise that chat never posts directly.'],
+      ['Assistant message', 'Explains the current limit and points to the verified workflows below.'],
+      ['Composer', 'Text box with attach-document button. Enter previews, Shift+Enter adds a line. Footer repeats: “Nothing is sent or posted.”'],
+      ['Review rail', 'Right-hand panel: “No proposal to review.” Describes what will appear when conversation produces a structured proposal.'],
+      ['Four-step contract', 'Proposal → Validation → Your confirmation → Posting. The same steps the manual flow uses today.'],
+      ['Manual proposal link', 'Shortcut to Record a financial event so users are never blocked by the missing assistant.'],
+    ],
+    hot: [[375,32],[1290,33],[660,400],[680,765],[668,846],[1250,200],[1260,410],[1250,612]],
+    rules: ['Quick-start cards under the composer jump to Activity, Reports and Record an event.', 'A future assistant may only create a proposal; confirmation and posting stay human actions.', 'Personal space shows “Personal proposal creation remains unavailable.”'],
+    data: ['No network calls for the message itself'] },
+
+  // ---------- Money ----------
+  { section: 'Money', title: 'Money overview', url: '/money', img: '04-money-overview.png', kicker: 'Money',
+    lead: 'The plain-language home for a business’s finances: how much came in, how much went out, and where the balances stand.',
+    items: [
+      ['Record an event', 'Primary action. Opens the proposal form. Hidden if the role cannot create proposals.'],
+      ['Money tabs', 'Overview, Accounts, Income, Spending, Transfers.'],
+      ['Ledger balanced', 'Badge confirming total debits equal total credits in the trial balance.'],
+      ['Financial date range', 'Income and spending refresh only when “Apply range” is pressed, so numbers never change under the reader.'],
+      ['Income and Spending', 'Large totals for the range, each with an “Understand” link to its detail tab.'],
+      ['Account balances', 'Every account with code, type, amount and whether the balance is Debit or Credit.'],
+      ['Recent activity', 'Latest posted entries with project, date, amount and state (Posted or Reversal).'],
+    ],
+    hot: [[1247,176],[620,260],[1260,350],[860,548],[600,740],[840,1100],[840,1700]],
+    rules: ['Every number is derived from the trial balance; the interface never computes money on its own.', 'Amounts use integer minor units and the business currency format.', 'Empty business: friendly empty states prompt to create accounts first.'],
+    data: ['GET /reports/trial-balance', 'GET /reports/income-statement', 'GET /journal-entries'] },
+
+  { section: 'Money', title: 'Accounts', url: '/money/accounts', img: '05-money-accounts.png', kicker: 'Money',
+    lead: 'The chart of accounts in plain terms. Accountants can add and deactivate accounts without leaving Money.',
+    items: [
+      ['Filters', '“Find on this page”, Account type and Status narrow the list.'],
+      ['Account list', 'Code, name, type (asset, liability, equity, revenue, expense) and status.'],
+      ['Add account', 'Toggles an inline form with Code, Name and Account type (the button turns into Cancel). Available to roles that can manage accounts.'],
+      ['Open an account', 'Each row links to its detail page with the live balance.'],
+    ],
+    rules: ['Account codes are unique per business.', 'Deactivating hides an account from new proposals but keeps its posted history.', 'Members and viewers see the list read-only.'],
+    data: ['GET /accounts', 'POST /accounts', 'PATCH /accounts/{id}'] },
+
+  { section: 'Money', title: 'Account detail', url: '/money/accounts/{id}', img: '17-account-detail.png', kicker: 'Money',
+    lead: 'One account, one screen: its balance, its identity and a way to see what moved it.',
+    items: [
+      ['Back to Money', 'Returns to the overview.'],
+      ['Current balance', 'Ledger-derived, with “Debit balance” or “Credit balance” spelled out.'],
+      ['Status tiles', 'Active state, account type and code. “Deactivate account” sits beside them for authorized roles.'],
+      ['Accounting detail', 'Collapsed by default. Expands to the debit and credit totals behind the balance, for people who want the mechanics.'],
+      ['Review posted activity', 'Link to Activity, with a note that an account-specific filter is not offered by the API yet.'],
+    ],
+    hot: [[557,64],[1060,347],[840,533],[840,633],[1117,775]],
+    rules: ['Progressive disclosure keeps jargon (debit, credit) out of the way until requested.'],
+    data: ['GET /accounts/{id}', 'PATCH /accounts/{id}'] },
+
+  { section: 'Money', title: 'Income', url: '/money → Income', img: '06-money-income.png', kicker: 'Money',
+    lead: 'Revenue recognized for the chosen dates, in one number, with an honest note about what is not available.',
+    items: [
+      ['Date range', 'Same explicit-apply pattern as the overview.'],
+      ['Total revenue', 'Large figure for the selected range.'],
+      ['From posted ledger data', 'Chip that tells readers the figure is authoritative, not an estimate.'],
+      ['Follow the underlying activity', 'Buttons to Activity and the full income statement. The note explains that category breakdowns are not invented.'],
+    ],
+    hot: [[840,510],[535,695],[1230,637],[840,910]],
+    rules: ['No product or category split is shown because the API does not provide one; the UI says so instead of guessing.'],
+    data: ['GET /reports/income-statement'] },
+
+  { section: 'Money', title: 'Spending', url: '/money → Spending', img: '07-money-spending.png', kicker: 'Money',
+    lead: 'The mirror of Income: what the business spent in the range, with the same range control and the same honesty about detail.',
+    items: [
+      ['Date range', 'Explicit apply.'],
+      ['Total spending', 'Expense accounts summed from posted lines.'],
+      ['Links onward', 'Open Activity or the full income statement for the line-by-line view.'],
+    ],
+    rules: ['Reversed entries net out: a mistaken expense and its reversal leave only the corrected amount.'],
+    data: ['GET /reports/income-statement'] },
+
+  { section: 'Money', title: 'Transfers (not enabled)', url: '/money → Transfers', img: '07b-money-transfers.png', kicker: 'Money',
+    lead: 'A deliberate empty state. The product refuses to fake a transfer feature the backend does not have.',
+    items: [
+      ['Guided transfers are not enabled', 'Explains there is no dedicated transfer workflow and that Chatbooks will not imitate one with a normal expense.'],
+      ['Accountant note', 'Accountants can still record a transfer through the structured proposal flow when they know the accounts.'],
+    ],
+    hot: [[730,470],[840,636]],
+    rules: ['Personal transfers and personal/business movements remain deferred.'] },
+
+  // ---------- Proposals ----------
+  { section: 'Record an event', title: 'Record a financial event', url: '/money/proposals/new', img: '15-proposal-new.png', kicker: 'Proposal · step 1',
+    lead: 'The manual path for creating a proposal. It looks like a simple form, but its output is only a draft: nothing touches the ledger from here.',
+    items: [
+      ['Financial date', 'Defaults to today. Must fall in an open period to post later.'],
+      ['Description', 'Free text, “What happened?”. Appears throughout Activity and reports.'],
+      ['Money movement lines', 'Each line has an account, a side (debit or credit), an amount and an optional project.'],
+      ['Add line', 'Adds more lines. At least one debit and one credit are required.'],
+      ['Reassurance', '“No ledger effect until it is validated, explicitly confirmed by an authorized user, and posted.”'],
+      ['Create proposal', 'Saves an immutable proposal and opens the review screen.'],
+    ],
+    hot: [[595,256],[1090,256],[840,430],[1280,332],[840,628],[1248,698]],
+    rules: ['Amounts are typed as decimals and converted to integer minor units on submit.', 'Lines can be removed individually (Remove line N).', 'Cancel returns to Money without saving.'],
+    access: 'Owner, Admin, Accountant, Member',
+    data: ['POST /proposals', 'GET /accounts', 'GET /projects'] },
+
+  { section: 'Record an event', title: 'Review: awaiting validation', url: '/money/proposals/{id}', img: '16-proposal-review.png', kicker: 'Proposal · step 2',
+    lead: 'A five-step stepper makes the process visible. Validation, confirmation and posting are three separate actions on purpose.',
+    items: [
+      ['Stepper', 'Draft ✓ → Validate → Review → Confirm → Post. The current step is bold; finished steps show a check.'],
+      ['Proposal card', 'Manual-proposal tag, description, date and version. The total reads “Pending validation” until checks run.'],
+      ['Journal lines', 'Each line shows side, account, code and whether a project is assigned.'],
+      ['Validate proposal', 'Runs deterministic accounting checks: balanced, accounts active, period open.'],
+    ],
+    rules: ['A proposal is immutable. Changing anything means creating a new version.', 'Roles without permission see a note instead of a disabled button.'],
+    access: 'Validate: Owner, Admin, Accountant, Member',
+    data: ['GET /proposals/{id}', 'POST /proposals/{id}/validate'] },
+
+  { section: 'Record an event', title: 'Review: validated', url: '/money/proposals/{id}', img: '16b-proposal-validated.png', kicker: 'Proposal · step 3',
+    lead: 'Validation succeeded. The total now shows, a green evidence strip appears and the next action changes to “Review and confirm”.',
+    items: [
+      ['Total amount', 'Replaces “Pending validation” with the validated debit total.'],
+      ['Review and confirm', 'Opens the confirmation dialog. Only roles that can confirm see the button.'],
+      ['Validation evidence', 'Shows “Balanced and eligible” with total debits and credits.'],
+    ],
+    rules: ['A Member can validate but sees “An accountant or administrator must confirm this validated proposal.”'],
+    access: 'Confirm: Owner, Admin, Accountant',
+    data: ['POST /proposals/{id}/confirm'] },
+
+  { section: 'Record an event', title: 'Confirm this exact proposal', url: 'dialog', img: '16c-proposal-confirm-dialog.png', kicker: 'Proposal · step 4',
+    lead: 'The one deliberate speed bump. The user binds their identity to a specific version of the proposal.',
+    items: [
+      ['Summary', 'Description, date, version and amount restated, so the user confirms what is shown.'],
+      ['Acknowledgement', 'A required checkbox: “I reviewed the accounts, amount, date, project context, and proposal version.”'],
+      ['Cancel / Confirm proposal', 'Confirm stays disabled until the box is ticked, then shows “Confirming…” while it runs.'],
+    ],
+    rules: ['Confirmation is bound to the validation and the exact version; changing the proposal invalidates it.', 'Posting remains a separate action even after confirming.'],
+    data: ['POST /proposals/{id}/confirm  (Idempotency-Key header)'] },
+
+  { section: 'Record an event', title: 'Confirmed: ready to post', url: '/money/proposals/{id}', img: '16d-proposal-confirmed.png', kicker: 'Proposal · step 5',
+    lead: 'Everything is checked and accepted, but the ledger has still not changed. The page says so in a green notice.',
+    items: [
+      ['Stepper', 'Draft, Validate, Review and Confirm are all checked. Only Post remains.'],
+      ['Proposal summary', 'Description, date, version and the validated total.'],
+      ['Lines', 'The exact debits and credits that will be written.'],
+      ['Post to ledger', 'Final action. Writes the entry in one atomic transaction.'],
+      ['Evidence strip', 'Balanced and eligible, with debit and credit totals.'],
+      ['Confirmation notice', '“Confirmed by actor … Confirmation alone has not changed the ledger.”'],
+    ],
+    hot: [[840,222],[840,350],[840,500],[1256,633],[840,714],[840,796]],
+    rules: ['Posting is idempotent: pressing it twice cannot create two entries.', 'Needs the post-journal permission; others see a note.'],
+    access: 'Post: Owner, Admin, Accountant',
+    data: ['POST /proposals/{id}/post  (Idempotency-Key header)'] },
+
+  { section: 'Record an event', title: 'Posted', url: '/money/proposals/{id}', img: '16e-proposal-posted.png', kicker: 'Proposal · done',
+    lead: 'After posting, the action becomes a link to the permanent entry. The proposal screen is now a receipt.',
+    items: [
+      ['View posted entry', 'Replaces the action button and opens the immutable journal entry.'],
+      ['Completed stepper', 'All five steps are checked.'],
+    ],
+    rules: ['Posted entries cannot be edited or deleted. Corrections use an audited reversal.'],
+    data: ['GET /proposals/{id}'] },
+
+  { section: 'Record an event', title: 'Posted entry', url: '/money/{entryId}', img: '18-entry-detail.png', kicker: 'Journal entry',
+    lead: 'The permanent record of one financial event, with the plain-language view first and the accounting beneath it.',
+    items: [
+      ['Back and Reverse', 'Reverse opens a dialog; there is no Edit or Delete.'],
+      ['Entry value and state', 'Large amount with a Posted badge.'],
+      ['Facts', 'Date, project, state and a short reference id.'],
+      ['Money movement', 'Expandable list of debits and credits with account code and type.'],
+      ['Accounting provenance', 'Collapsed evidence: the proposal, confirmation, period and audit trail behind this entry.'],
+    ],
+    hot: [[1240,210],[850,312],[840,470],[840,650],[840,797]],
+    rules: ['The “Create a reversal proposal” dialog asks for a Reversal date and a Reason, then opens a new proposal that goes through validate, confirm and post. The original entry stays visible.', 'Only roles with the reverse permission see the button.'],
+    access: 'Reverse: Owner, Admin, Accountant',
+    data: ['GET /journal-entries/{id}', 'POST /journal-entries/{id}/reversals'] },
+
+  // ---------- Activity ----------
+  { section: 'Activity', title: 'Money activity', url: '/activity', img: '08-activity.png', kicker: 'Activity',
+    lead: 'A chronological history of every posted event. Reversals sit in the same list, labeled, so history is never rewritten.',
+    items: [
+      ['Two views', 'Money activity for everyone; Audit trail for roles that may view evidence.'],
+      ['Filters', 'Search the loaded page by description or narrow by project.'],
+      ['Entry list', 'Title, project and date, amount and a state chip. Each row opens the entry.'],
+      ['Reversal chip', 'Amber chip marks compensating entries so they are never mistaken for ordinary activity.'],
+    ],
+    hot: [[440,258],[840,470],[840,750],[1270,545]],
+    rules: ['Searching and the project filter act on the page already loaded; they never change financial data.', 'Previous and Next move through pages, with a “1–7 of N” count.'],
+    data: ['GET /journal-entries'] },
+
+  { section: 'Activity', title: 'Audit trail', url: '/activity → Audit trail', img: '08b-activity-audit.png', kicker: 'Activity · advanced',
+    lead: 'Immutable evidence of who changed what and when. It is advanced by design and separated from everyday activity.',
+    items: [
+      ['Find an entity', 'Filter by an exact entity id.'],
+      ['Event rows', 'A plain-language label for the action, who did it (“You” or a short actor id) and when, with “View recorded details” to expand.'],
+      ['Previous / new state / metadata', 'The three panels inside each expanded event.'],
+    ],
+    rules: ['Append-only: events cannot be edited here.', 'Visible only with the view-audit permission (Owner, Admin, Accountant).'],
+    access: 'Owner, Admin, Accountant',
+    data: ['GET /audit-events'] },
+
+  // ---------- Reports ----------
+  { section: 'Reports', title: 'Income statement', url: '/reports', img: '09a-report-income.png', kicker: 'Reports',
+    lead: 'Five statements in one segmented control. Each is computed by the accounting engine, never by the browser.',
+    items: [
+      ['Report tabs', 'Income, Balance sheet, Cash flow, Trial balance, General ledger.'],
+      ['Range controls', 'From and To dates with an explicit Refresh.'],
+      ['Statement', 'Revenue, Expenses and Net income for the range.'],
+    ],
+    hot: [[645,255],[840,357],[840,660]],
+    rules: ['Balance sheet and trial balance use a single “As of” date; the other statements use From and To. Each remembers its value when you switch tabs.'],
+    data: ['GET /reports/income-statement'] },
+
+  { section: 'Reports', title: 'Balance sheet', url: '/reports → Balance sheet', img: '09b-report-balance.png', kicker: 'Reports',
+    lead: 'A snapshot of what the business owns and owes on one date.',
+    items: [
+      ['As of', 'Single date control.'],
+      ['Sections', 'Assets, Liabilities and Equity, each with its total.'],
+      ['Balanced badge', 'Shows “Balanced” in green, or “Needs review” in amber if the figures do not agree.'],
+    ],
+    data: ['GET /reports/balance-sheet'] },
+
+  { section: 'Reports', title: 'Cash flow', url: '/reports → Cash flow', img: '09c-report-cash.png', kicker: 'Reports',
+    lead: 'The only report that asks the user a question first. Chatbooks will not guess which accounts are cash.',
+    items: [
+      ['Date range', 'From and To.'],
+      ['Choose cash accounts', 'Explicit checkboxes of asset accounts. “Chatbooks does not infer which asset accounts represent cash.”'],
+      ['Empty state', 'Until at least one account is chosen, explains what happens next.'],
+    ],
+    hot: [[470,357],[840,520],[630,750]],
+    rules: ['Receivables are not cash; the user decides.'],
+    data: ['GET /reports/cash-flow'] },
+
+  { section: 'Reports', title: 'Trial balance', url: '/reports → Trial balance', img: '09d-report-trial.png', kicker: 'Reports',
+    lead: 'Every account with its debit or credit balance. The reference for “do the books balance?”',
+    items: [
+      ['As of', 'Date control with Refresh.'],
+      ['Balanced badge', 'Green when total debits equal total credits.'],
+      ['Account table', 'Code, name, debit and credit columns with a Total row.'],
+    ],
+    hot: [[470,370],[1257,481],[840,900]],
+    rules: ['Powers the Money overview’s “Ledger balanced” badge and account balances.'],
+    data: ['GET /reports/trial-balance'] },
+
+  { section: 'Reports', title: 'General ledger', url: '/reports → General ledger', img: '09e-report-ledger.png', kicker: 'Reports',
+    lead: 'Line-by-line detail for anyone who needs to trace a number to its source.',
+    items: [
+      ['Filters', 'Date range and paging controls.'],
+      ['Posted lines', 'Date, entry description, account, debit or credit and amount. The heading counts the lines.'],
+    ],
+    rules: ['Read-only. Includes reversal lines so nothing is hidden.'],
+    data: ['GET /reports/general-ledger'] },
+
+  // ---------- Projects ----------
+  { section: 'Projects', title: 'Projects', url: '/projects', img: '10-projects.png', kicker: 'Projects · business only',
+    lead: 'Client work as a first-class idea. A project keeps context and plans next to the ledger activity tagged to it.',
+    items: [
+      ['Create project', 'Opens the project form.'],
+      ['Project card', 'Name, client and a status chip (Active, etc.). Cards link to the detail page.'],
+      ['Plan values', 'Budget plan and expected revenue as planning figures.'],
+      ['Dates', 'Start and end of the engagement.'],
+    ],
+    hot: [[1255,176],[596,360],[596,402],[412,268]],
+    rules: ['Plans are editable and are never mixed with posted figures.', 'Not shown in a personal space.'],
+    access: 'Manage: Owner, Admin, Accountant, Member',
+    data: ['GET /projects'] },
+
+  { section: 'Projects', title: 'Project detail', url: '/projects/{id}', img: '11-project-detail.png', kicker: 'Projects',
+    lead: 'Plans and posted activity, “kept visibly separate”, on one page.',
+    items: [
+      ['Header card', 'Status, client, description and an Edit project button.'],
+      ['Project expectations', 'Editable budget, expected revenue and dates.'],
+      ['Honesty note', 'Budget remaining and collected revenue are not shown because the accounting model does not define them yet.'],
+      ['Account balances', 'Net balance per account from project-tagged posted lines only.'],
+      ['Posted project lines', 'General-ledger lines scoped to this project, with a New proposal shortcut.'],
+    ],
+    hot: [[824,360],[824,618],[824,711],[824,927],[824,1751]],
+    rules: ['A reversed expense shows both lines, so the project history stays truthful.'],
+    data: ['GET /projects/{id}', 'GET /reports/general-ledger'] },
+
+  { section: 'Projects', title: 'New project', url: '/projects/new', img: '12-project-new.png', kicker: 'Projects',
+    lead: 'A two-part form: who and what, then expectations.',
+    items: [
+      ['Project identity', 'Name, optional client, and a short context description for collaborators.'],
+      ['Planning values', 'Optional expected revenue and budget, start and end dates, and status.'],
+      ['Create', 'Saves and opens the new project.'],
+    ],
+    rules: ['Only the name is required.', 'Money fields accept decimals and are stored as minor units.'],
+    data: ['POST /projects'] },
+
+  { section: 'Projects', title: 'Edit project', url: '/projects/{id}/edit', img: '13-project-edit.png', kicker: 'Projects',
+    lead: 'The same form, prefilled. Changing plans never alters posted financial history.',
+    items: [
+      ['Prefilled fields', 'Everything from the create form, loaded from the project.'],
+      ['Status', 'Move a project between its states as work progresses.'],
+      ['Save changes', 'Updates planning data only.'],
+    ],
+    data: ['PATCH /projects/{id}'] },
+
+  // ---------- Settings ----------
+  { section: 'Settings', title: 'Settings', url: '/settings', img: '14-settings.png', kicker: 'Settings',
+    lead: 'Deliberately small. Setup that most people never need is tucked away; everyday setup lives where it is used.',
+    items: [
+      ['Current space', 'Business name, currency and decimal places.'],
+      ['Role badge', 'The signed-in user’s role in this business.'],
+      ['Authorization note', 'Backend authorization remains authoritative. Controls shown here cannot grant financial permission.'],
+      ['Where things live', 'Explains that account management sits under Money, while period controls stay here as advanced setup.'],
+      ['Accounting periods', 'Collapsible section. Lists periods with an Open or Locked chip.'],
+      ['Lock period', 'Prevents any further posting into a period.'],
+      ['Add period', 'Creates a named period with start and end dates.'],
+    ],
+    hot: [[640,290],[870,272],[640,445],[1140,330],[840,640],[1225,753],[1246,650]],
+    rules: ['Entries can post only into an open period.', 'Locking asks “Lock this period?” first, is permanent for now, and is limited to Owner and Admin.'],
+    access: 'Manage periods: Owner, Admin, Accountant · Lock: Owner, Admin',
+    data: ['GET /periods', 'POST /periods', 'POST /periods/{id}/lock'] },
+
+  // ---------- Mobile ----------
+  { section: 'Mobile', title: 'Mobile: Chat', url: 'phone width', img: '20-mobile-chat.png', phone: true, kicker: 'Mobile',
+    lead: 'The conversation hero and composer stack vertically; the review rail drops below as a section.',
+    items: [
+      ['Condensed top bar', 'Brand mark and context switcher.'],
+      ['Stacked layout', 'Hero, message, composer, then the proposal-review explainer.'],
+      ['Bottom tab bar', 'Always visible for the four main areas.'],
+    ] },
+
+  { section: 'Mobile', title: 'Mobile: Money', url: 'phone width', img: '21-mobile-money.png', phone: true, kicker: 'Mobile',
+    lead: 'The overview keeps its order but turns tables into stacked rows with the amount under the name.',
+    items: [
+      ['Full-width actions', '“Record an event” becomes a full-width button.'],
+      ['Scrollable tabs', 'Money tabs scroll sideways instead of wrapping.'],
+      ['Stacked balances', 'Account name, type, amount and balance direction in one column.'],
+    ] },
+
+  { section: 'Mobile', title: 'Mobile: Reports', url: 'phone width', img: '22-mobile-reports.png', phone: true, kicker: 'Mobile',
+    lead: 'Statements stay readable by stacking label above value and letting wide tables scroll.',
+    items: [
+      ['Segmented tabs', 'Scroll horizontally.'],
+      ['Date fields', 'Full-width inputs with native pickers.'],
+      ['Statement', 'Rows keep label left and amount right.'],
+    ] },
+
+  // ---------- Wrap-up ----------
+  { type: 'roles' },
+  { type: 'notes' },
+];
+
+const SECTIONS = ['Getting in', 'App shell', 'Chat', 'Money', 'Record an event', 'Activity', 'Reports', 'Projects', 'Settings', 'Mobile'];
+const el = (t, c, h) => { const e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; };
+const esc = (s) => String(s).replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+const main = document.getElementById('main');
+
+const roleTable = () => {
+  const rows = [
+    ['Create a proposal', 1, 1, 1, 1, 0],
+    ['Confirm a proposal', 1, 1, 1, 0, 0],
+    ['Post to the ledger', 1, 1, 1, 0, 0],
+    ['Reverse an entry', 1, 1, 1, 0, 0],
+    ['Manage projects', 1, 1, 1, 1, 0],
+    ['Manage accounts', 1, 1, 1, 0, 0],
+    ['Manage periods', 1, 1, 1, 0, 0],
+    ['Lock a period', 1, 1, 0, 0, 0],
+    ['View audit trail', 1, 1, 1, 0, 0],
+  ];
+  return '<table><thead><tr><th>Action</th><th>Owner</th><th>Admin</th><th>Accountant</th><th>Member</th><th>Viewer</th></tr></thead><tbody>' +
+    rows.map((r) => '<tr><td>' + r[0] + '</td>' + r.slice(1).map((v) => v ? '<td class="y">✓</td>' : '<td class="n">–</td>').join('') + '</tr>').join('') + '</tbody></table>';
+};
+
+function build(s, i) {
+  const sec = el('section', 'slide'); sec.dataset.i = i; sec.setAttribute('aria-label', s.title || s.type);
+  if (s.type === 'cover') {
+    sec.classList.add('full-slide');
+    sec.innerHTML = '<div class="full cover"><div class="inner"><p class="kicker">Product walkthrough</p><h1>Chatbooks: money, made clearer.</h1><p class="lead">Every screen of the customer app, with what each part does, who can use it and what it talks to. Screens on the left, details on the right.</p><div class="pillrow"><span class="pill">Next.js frontend</span><span class="pill">FastAPI service</span><span class="pill">Double-entry ledger</span><span class="pill">Review before anything posts</span></div><p class="lead" style="margin-top:34px;font-size:15px">Use ← → to move, G for contents, M to hide markers, click a numbered marker to highlight its description.</p></div></div>';
+    return sec;
+  }
+  if (s.type === 'principles') {
+    sec.innerHTML = '<div class="full"><div class="inner"><p class="kicker">How it works</p><h1>A friendly surface over a strict ledger.</h1><p class="lead">The interface speaks in plain words, but every financial change follows the same guarded path. That path shapes almost every screen in this deck.</p>' +
+      '<div class="flow"><div class="step"><i>1 · PROPOSE</i><b>Proposal</b><span>Exact date, amount, accounts and project. Immutable once saved.</span></div><div class="step"><i>2 · CHECK</i><b>Validation</b><span>Deterministic checks: balanced, active accounts, open period.</span></div><div class="step"><i>3 · AGREE</i><b>Confirmation</b><span>A person confirms the exact version with a required acknowledgement.</span></div><div class="step"><i>4 · WRITE</i><b>Posting</b><span>One atomic, idempotent transaction creates the journal entry.</span></div></div>' +
+      '<div class="grid"><div class="card"><b>The ledger is the truth</b><span>Balances and reports come from posted entries. The browser never computes money.</span></div><div class="card"><b>Nothing is edited or deleted</b><span>Corrections are audited reversals that sit next to the original.</span></div><div class="card"><b>Integer minor units</b><span>No floating-point money. Amounts are stored in cents (or the currency’s smallest unit).</span></div><div class="card"><b>Isolation and roles</b><span>Each business is separate. Owner, Admin, Accountant, Member and Viewer see different actions.</span></div><div class="card"><b>Honest empty states</b><span>If the backend cannot do something, the UI says so rather than faking it.</span></div><div class="card"><b>Safe sessions</b><span>HTTP-only cookies and a same-origin proxy keep tokens away from page scripts.</span></div></div></div></div>';
+    return sec;
+  }
+  if (s.type === 'roles') {
+    sec.innerHTML = '<div class="full"><div class="inner"><p class="kicker">Access</p><h1>Who can do what.</h1><p class="lead">The interface hides or explains actions a role cannot take. The server is still the authority: showing a button never grants permission.</p>' + roleTable() + '<p class="lead" style="margin-top:18px;font-size:15px">Roles come from the frontend permission map. When a role lacks an action, the screen shows a short note such as “An accountant or administrator must confirm this validated proposal.”</p></div></div>';
+    return sec;
+  }
+  if (s.type === 'notes') {
+    sec.innerHTML = '<div class="full"><div class="inner"><p class="kicker">Observations</p><h1>Not built yet, and things to look at.</h1><p class="lead">Gathered while capturing these screens against the running app.</p><div class="grid">' +
+      '<div class="card"><b>Not active yet</b><span>Conversational assistant, personal finance space, document extraction, budgets, reminders, bank connections and guided transfers.</span></div>' +
+      '<div class="card"><b>Collapsed rows read as one line</b><span>In the screenshots the summary rows on Posted entry (“Money movement”, “Accounting provenance”) and in the context-switcher menu run their title, hint and action together without spacing.</span></div>' +
+      '<div class="card"><b>Selected tab contrast</b><span>On the Money Income, Spending and Transfers tabs the selected tab label looked dark on a dark pill in the captures, while Overview looked correct. Worth a check in the browser.</span></div>' +
+      '<div class="card"><b>Missing filters</b><span>The API has no account-specific activity filter and no category breakdown for income or spending; the UI points to Activity and reports instead.</span></div>' +
+      '<div class="card"><b>Browser confirm dialog</b><span>Locking a period uses the browser’s built-in confirm box rather than the styled dialog used for proposals and reversals.</span></div>' +
+      '<div class="card"><b>Demo data</b><span>All figures in this deck come from a throwaway demo business (Acme Studio) created for the screenshots.</span></div></div></div></div>';
+    return sec;
+  }
+
+  // screen slide
+  const stage = el('div', 'stage' + (s.phone ? ' phone-stage' : ''));
+  const frame = el('div', s.phone ? 'phone' : 'frame');
+  const sc = el('div', 'scroller'); const shot = el('div', 'shot'); const img = new Image();
+  img.src = 'screens/' + s.img; img.alt = s.title + ' screen'; img.loading = 'lazy'; shot.appendChild(img); sc.appendChild(shot);
+  if (s.phone) frame.appendChild(sc); else { const ch = el('div', 'chrome', '<span></span><span></span><span></span><em>' + esc(s.url) + '</em>'); frame.appendChild(ch); frame.appendChild(sc); }
+  stage.appendChild(frame); stage.appendChild(el('div', 'hint', '<span>Scroll the screen inside the frame</span><span>' + esc(s.img) + '</span>'));
+
+  const det = el('div', 'detail');
+  det.appendChild(el('p', 'kicker', esc(s.kicker || s.section)));
+  det.appendChild(el('h1', '', esc(s.title)));
+  det.appendChild(el('p', 'lead', esc(s.lead)));
+  det.appendChild(el('h3', '', s.hot ? 'On this screen' : 'What it does'));
+  const list = el(s.hot ? 'ol' : 'ul', 'items');
+  s.items.forEach((it, k) => {
+    const li = el('li', '', (s.hot ? '<div class="num">' + (k + 1) + '</div>' : '<div class="dot"></div>') + '<div><b>' + esc(it[0]) + '</b><span>' + esc(it[1]) + '</span></div>');
+    li.dataset.k = k; list.appendChild(li);
+  });
+  det.appendChild(list);
+  if (s.rules) { det.appendChild(el('h3', '', 'Behaviour and rules')); det.appendChild(el('ul', 'rules', s.rules.map((r) => '<li>' + esc(r) + '</li>').join(''))); }
+  if (s.access) { det.appendChild(el('h3', '', 'Who can')); det.appendChild(el('div', 'chips', '<span class="chip role">' + esc(s.access) + '</span>')); }
+  if (s.data) { det.appendChild(el('h3', '', 'Talks to')); det.appendChild(el('div', 'chips', s.data.map((d) => '<span class="chip">' + esc(d) + '</span>').join(''))); }
+
+  if (s.hot) {
+    const place = () => {
+      shot.querySelectorAll('.mk').forEach((m) => m.remove());
+      const W = img.naturalWidth, H = img.naturalHeight; if (!W) return;
+      s.hot.forEach((p, k) => {
+        const m = el('button', 'mk', String(k + 1)); m.style.left = (p[0] / W * 100) + '%'; m.style.top = (p[1] / H * 100) + '%'; m.setAttribute('aria-label', 'Show detail ' + (k + 1) + ': ' + s.items[k][0]);
+        const on = () => { list.querySelectorAll('li').forEach((l) => l.classList.toggle('on', +l.dataset.k === k)); shot.querySelectorAll('.mk').forEach((x, j) => x.classList.toggle('on', j === k)); const li = list.children[k]; li.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+        m.addEventListener('click', on); shot.appendChild(m);
+      });
+    };
+    img.addEventListener('load', place); if (img.complete) place();
+    list.addEventListener('mouseover', (e) => { const li = e.target.closest('li'); if (!li) return; shot.querySelectorAll('.mk').forEach((x, j) => x.classList.toggle('on', j === +li.dataset.k)); });
+    list.addEventListener('mouseleave', () => shot.querySelectorAll('.mk').forEach((x) => x.classList.remove('on')));
+    list.addEventListener('click', (e) => { const li = e.target.closest('li'); if (!li) return; const k = +li.dataset.k; const mk = shot.querySelectorAll('.mk')[k]; if (mk) mk.scrollIntoView({ block: 'center', behavior: 'smooth' }); list.querySelectorAll('li').forEach((l) => l.classList.toggle('on', l === li)); });
+  }
+  sec.appendChild(stage); sec.appendChild(det);
+  return sec;
+}
+
+slides.forEach((s, i) => main.appendChild(build(s, i)));
+const nodes = [...main.querySelectorAll('.slide')];
+let cur = 0;
+function show(i, push = true) {
+  cur = Math.max(0, Math.min(nodes.length - 1, i));
+  nodes.forEach((n, k) => n.classList.toggle('active', k === cur));
+  document.getElementById('counter').textContent = (cur + 1) + ' / ' + nodes.length;
+  document.getElementById('bar').style.width = ((cur + 1) / nodes.length * 100) + '%';
+  document.title = (slides[cur].title || 'Chatbooks') + ' · Chatbooks UX';
+  if (push) history.replaceState(null, '', '#' + (cur + 1));
+  document.querySelectorAll('#tocPanel button').forEach((b) => b.classList.toggle('cur', +b.dataset.i === cur));
+}
+const toggleMk = () => { const off = document.body.classList.toggle('hide-mk'); document.getElementById('mkBtn').setAttribute('aria-pressed', String(!off)); };
+document.getElementById('mkBtn').onclick = toggleMk;
+document.getElementById('prev').onclick = () => show(cur - 1);
+document.getElementById('next').onclick = () => show(cur + 1);
+const toc = document.getElementById('toc'), panel = document.getElementById('tocPanel');
+let lastSec = null;
+slides.forEach((s, i) => {
+  const name = s.type === 'cover' ? 'Start' : s.type === 'principles' ? 'Overview' : (s.type === 'roles' || s.type === 'notes') ? 'Wrap-up' : s.section;
+  if (name !== lastSec) { panel.appendChild(el('h4', '', esc(name))); lastSec = name; }
+  const b = el('button', '', '<small>' + (i + 1) + '</small><span>' + esc(s.title || (s.type === 'cover' ? 'Cover' : s.type === 'principles' ? 'How it works' : s.type === 'roles' ? 'Who can do what' : 'Observations')) + '</span>');
+  b.dataset.i = i; b.onclick = () => { show(i); toc.classList.remove('open'); }; panel.appendChild(b);
+});
+const toggleToc = () => toc.classList.toggle('open');
+document.getElementById('tocBtn').onclick = toggleToc;
+toc.addEventListener('click', (e) => { if (e.target === toc) toc.classList.remove('open'); });
+document.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { show(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(cur - 1); }
+  else if (e.key === 'Home') show(0); else if (e.key === 'End') show(nodes.length - 1);
+  else if (e.key.toLowerCase() === 'g') toggleToc(); else if (e.key.toLowerCase() === 'm') toggleMk(); else if (e.key === 'Escape') toc.classList.remove('open');
+});
+show((parseInt(location.hash.slice(1), 10) || 1) - 1, false);
+</script>
+</body>
+</html>
